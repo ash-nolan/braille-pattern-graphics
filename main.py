@@ -19,6 +19,9 @@ def main() -> None:
     # 80x30 characters total
     canvas = bpgfx.Canvas((160, 120))
 
+    canvas.set_dot((-1000, 1000), True)
+    print(canvas.get_dot((-1000, 1000)))
+    time.sleep(1)
     for i in itertools.count(start=1):
         canvas.clear()
         # Draw boarder box.

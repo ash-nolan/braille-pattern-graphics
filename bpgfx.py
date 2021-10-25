@@ -57,11 +57,13 @@ class Canvas:
         return self.size[1]
 
     def get_dot(self, pos: Tuple[int, int]) -> bool:
-        self._validate_dot_position(pos)
+        if not (0 <= pos[0] < self.width and 0 <= pos[1] < self.height):
+            return False  # off-canvas
         return self._dots[pos[0]][pos[1]]
 
     def set_dot(self, pos: Tuple[int, int], raised: bool) -> None:
-        self._validate_dot_position(pos)
+        if not (0 <= pos[0] < self.width and 0 <= pos[1] < self.height):
+            return  # off-canvas
         self._dots[pos[0]][pos[1]] = raised
 
     def clear(self, raised: bool = False) -> None:
@@ -93,14 +95,3 @@ class Canvas:
                 s += chr(0x2800 | bits)
             s += "\n"
         return s
-
-    def _validate_dot_position(self, pos: Tuple[int, int]) -> None:
-        x, y = pos[0], pos[1]
-        if not (0 <= x < self.width):
-            raise ValueError(
-                f"Invalid x-position {x} (expected 0 <= x < {self.width})"
-            )
-        if not (0 <= y < self.height):
-            raise ValueError(
-                f"Invalid y-position {x} (expected 0 <= y < {self.height})"
-            )
