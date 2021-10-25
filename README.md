@@ -1,4 +1,4 @@
-# Braille Graphics
+# Braille Pattern Graphics
 
 ## Dependencies
 ```sh
