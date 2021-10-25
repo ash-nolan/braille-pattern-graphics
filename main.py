@@ -8,6 +8,16 @@ import bpgfx
 
 
 def main() -> None:
+    canvas = bpgfx.Canvas((5, 5))
+    canvas.set_dot((0, 0), True)
+    canvas.set_dot((1, 1), True)
+    canvas.set_dot((2, 2), True)
+    canvas.set_dot((3, 3), True)
+    canvas.set_dot((4, 4), True)
+    print(canvas)
+    print(repr(canvas))
+    time.sleep(2)
+
     # 640x480 dots
     # v
     # scale down by 4x
@@ -19,9 +29,6 @@ def main() -> None:
     # 80x30 characters total
     canvas = bpgfx.Canvas((160, 120))
 
-    canvas.set_dot((-1000, 1000), True)
-    print(canvas.get_dot((-1000, 1000)))
-    time.sleep(1)
     for i in itertools.count(start=1):
         canvas.clear()
         # Draw boarder box.
