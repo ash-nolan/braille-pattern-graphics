@@ -28,44 +28,43 @@
 # U+28Ex | ⣠ | ⣡ | ⣢ | ⣣ | ⣤ | ⣥ | ⣦ | ⣧ | ⣨ | ⣩ | ⣪ | ⣫ | ⣬ | ⣭ | ⣮ | ⣯
 # U+28Fx | ⣰ | ⣱ | ⣲ | ⣳ | ⣴ | ⣵ | ⣶ | ⣷ | ⣸ | ⣹ | ⣺ | ⣻ | ⣼ | ⣽ | ⣾ | ⣿
 
-from typing import List, Tuple
+from typing import List
 from abc import ABC, abstractmethod
 import math
 
 
 class Canvas:
-    def __init__(self, size: Tuple[int, int]) -> None:
-        if size[0] < 0 or size[1] < 0:
-            raise ValueError(f"Invalid canvas size {size}")
-
-        self._size: Tuple[int, int] = size
-        dots_w = int(math.ceil(size[0] / 2) * 2)
-        dots_h = int(math.ceil(size[0] / 4) * 4)
-        self._dots: List[List[bool]] = [
-            [False for _ in range(dots_w)] for _ in range(dots_h)
-        ]
-
-    @property
-    def size(self) -> Tuple[int, int]:
-        return self._size
+    def __init__(self, width: int, height: int) -> None:
+        if width < 0 or height < 0:
+            raise ValueError(f"Invalid canvas size {width}x{height}")
+        # fmt: off
+        self._width:  int = width
+        self._height: int = height
+        dots_w = int(math.ceil(width  / 2) * 2)
+        dots_h = int(math.ceil(height / 4) * 4)
+        self._dots: List[List[bool]] = \
+            [[False for _ in range(dots_w)] for _ in range(dots_h)]
+        # fmt: on
 
     @property
     def width(self) -> int:
-        return self.size[0]
+        return self._width
 
     @property
     def height(self) -> int:
-        return self.size[1]
+        return self._height
 
-    def get_dot(self, pos: Tuple[int, int]) -> bool:
-        if not (0 <= pos[0] < self.width and 0 <= pos[1] < self.height):
-            return False  # off-canvas
-        return self._dots[pos[1]][pos[0]]
+    def get_dot(self, x: int, y: int) -> bool:
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            # off-canvas
+            return False
+        return self._dots[y][x]
 
-    def set_dot(self, pos: Tuple[int, int], raised: bool) -> None:
-        if not (0 <= pos[0] < self.width and 0 <= pos[1] < self.height):
-            return  # off-canvas
-        self._dots[pos[1]][pos[0]] = raised
+    def set_dot(self, x: int, y: int, raised: bool) -> None:
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            # off-canvas
+            return
+        self._dots[y][x] = raised
 
     def clear(self, raised: bool = False) -> None:
         for y in range(self.height):
@@ -77,9 +76,8 @@ class Canvas:
 
     def __repr__(self) -> str:
         name: str = type(self).__name__
-        size: str = repr(self._size)
         dots: str = repr(self._dots)
-        return f"{name}({size}, {dots})"
+        return f"{name}({self.width}x{self.height}, {dots})"
 
     def __str__(self) -> str:
         s = ""
@@ -119,7 +117,7 @@ class Point(Drawable):
         self.y: int = y
 
     def draw(self, canvas: Canvas) -> None:
-        canvas.set_dot((self.x, self.y), True)
+        canvas.set_dot(self.x, self.y, True)
 
 
 class Line(Drawable):
@@ -149,6 +147,6 @@ class Line(Drawable):
         x: float = float(self.p1.x)
         y: float = float(self.p1.y)
         for i in range(nsteps + 1):
-            canvas.set_dot((int(round(x)), int(round(y))), True)
+            canvas.set_dot(int(round(x)), int(round(y)), True)
             x += xstep
             y += ystep

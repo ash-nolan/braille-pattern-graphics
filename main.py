@@ -17,7 +17,7 @@ def main() -> None:
     # with 2x4 dots per monospace character
     # v
     # 80x30 characters total
-    canvas = bpgfx.Canvas((160, 120))
+    canvas = bpgfx.Canvas(160, 120)
 
     for i in itertools.count(start=1):
         canvas.clear()
