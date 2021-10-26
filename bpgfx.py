@@ -72,7 +72,7 @@ class Canvas:
             for x in range(self.width):
                 self._dots[y][x] = raised
 
-    def draw(self, drawable: "Drawable") -> None:
+    def draw(self, drawable) -> None:
         drawable.draw(self)
 
     def __repr__(self) -> str:
@@ -106,13 +106,7 @@ class Canvas:
         return s
 
 
-class Drawable(ABC):
-    @abstractmethod
-    def draw(self, canvas: Canvas) -> None:
-        pass
-
-
-class Point(Drawable):
+class Point:
     def __init__(self, x: int, y: int) -> None:
         self.x: int = x
         self.y: int = y
@@ -121,7 +115,7 @@ class Point(Drawable):
         canvas.set_dot(self.x, self.y, True)
 
 
-class Line(Drawable):
+class Line:
     def __init__(self, p1: Point, p2: Point) -> None:
         self.p1: Point = p1
         self.p2: Point = p2
@@ -153,7 +147,7 @@ class Line(Drawable):
             y += ystep
 
 
-class Rectangle(Drawable):
+class Rectangle:
     def __init__(self, position: Point, width: int, height: int) -> None:
         if width < 0 or height < 0:
             name: str = type(self).__name__
@@ -173,7 +167,7 @@ class Rectangle(Drawable):
         canvas.draw(Line(Point(x2, y1), Point(x2, y2)))
 
 
-class Sprite(Drawable):
+class Sprite:
     def __init__(self, position: Point, width: int, height: int) -> None:
         if width < 0 or height < 0:
             name: str = type(self).__name__
