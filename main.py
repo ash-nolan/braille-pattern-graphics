@@ -8,16 +8,6 @@ import bpgfx
 
 
 def main() -> None:
-    canvas = bpgfx.Canvas((5, 5))
-    canvas.set_dot((0, 0), True)
-    canvas.set_dot((1, 1), True)
-    canvas.set_dot((2, 2), True)
-    canvas.set_dot((3, 3), True)
-    canvas.set_dot((4, 4), True)
-    print(canvas)
-    print(repr(canvas))
-    time.sleep(2)
-
     # 640x480 dots
     # v
     # scale down by 4x
@@ -31,21 +21,32 @@ def main() -> None:
 
     for i in itertools.count(start=1):
         canvas.clear()
+
         # Draw boarder box.
+        upper = bpgfx.Line(bpgfx.Point(0, 0), bpgfx.Point(canvas.width - 1, 0))
+        lower = bpgfx.Line(
+            bpgfx.Point(0, canvas.height - 1),
+            bpgfx.Point(canvas.width - 1, canvas.height - 1),
+        )
+        lhs = bpgfx.Line(bpgfx.Point(0, 0), bpgfx.Point(0, canvas.height - 1))
+        rhs = bpgfx.Line(
+            bpgfx.Point(canvas.width - 1, 0),
+            bpgfx.Point(canvas.width - 1, canvas.height - 1),
+        )
+        canvas.draw(upper)
+        canvas.draw(lower)
+        canvas.draw(lhs)
+        canvas.draw(rhs)
+
+        # Draw the sine wave.
         for x in range(canvas.width):
-            canvas.set_dot((x, 0), True)
-            canvas.set_dot((x, canvas.height - 1), True)
-        for y in range(canvas.height):
-            canvas.set_dot((0, y), True)
-            canvas.set_dot((canvas.width - 1, y), True)
-        # Draw sin wave.
-        for x in range(canvas.width):
-            canvas.set_dot((x, canvas.height // 2), True)
+            canvas.draw(bpgfx.Point(x, canvas.height // 2))
+
             degrees = (x + i) * 2
             radians = math.radians(degrees)
             scale = (canvas.height * 0.75) / 2
             y = int(canvas.height / 2 - math.sin(radians) * scale)
-            canvas.set_dot((x, y), True)
+            canvas.draw(bpgfx.Point(x, y))
 
         TERM_CLEAR = f"\N{ESCAPE}[H\N{ESCAPE}[2J"  # HOME; CLEAR SCREEN
         print(f"{TERM_CLEAR}{canvas}", end="")

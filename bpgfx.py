@@ -29,6 +29,7 @@
 # U+28Fx | ⣰ | ⣱ | ⣲ | ⣳ | ⣴ | ⣵ | ⣶ | ⣷ | ⣸ | ⣹ | ⣺ | ⣻ | ⣼ | ⣽ | ⣾ | ⣿
 
 from typing import List, Tuple
+from abc import ABC, abstractmethod
 import math
 
 
@@ -71,6 +72,9 @@ class Canvas:
             for x in range(self.width):
                 self._dots[y][x] = raised
 
+    def draw(self, drawable: "Drawable") -> None:
+        drawable.draw(self)
+
     def __repr__(self) -> str:
         name: str = type(self).__name__
         size: str = repr(self._size)
@@ -101,3 +105,50 @@ class Canvas:
                 s += chr(0x2800 | bits)
             s += "\n"
         return s
+
+
+class Drawable(ABC):
+    @abstractmethod
+    def draw(self, canvas: Canvas) -> None:
+        pass
+
+
+class Point(Drawable):
+    def __init__(self, x: int, y: int) -> None:
+        self.x: int = x
+        self.y: int = y
+
+    def draw(self, canvas: Canvas) -> None:
+        canvas.set_dot((self.x, self.y), True)
+
+
+class Line(Drawable):
+    def __init__(self, p1: Point, p2: Point) -> None:
+        self.p1: Point = p1
+        self.p2: Point = p2
+
+    def draw(self, canvas: Canvas) -> None:
+        # Optimized line function from the article "Line drawing on a grid"
+        # written by Red Blob Games, ported from C# to Python3.
+        # https://www.redblobgames.com/grids/line-drawing.html
+        #
+        # The number of steps to take is exactly the diagonal distance between
+        # (x1, y1) and (x2, y2).
+        dx: int = self.p2.x - self.p1.x
+        dy: int = self.p2.y - self.p1.y
+        abs_dx: int = abs(dx)
+        abs_dy: int = abs(dy)
+        nsteps: int = abs_dx if abs_dx > abs_dy else abs_dy
+        # Calculate the x and y step distance per step-iteration.
+        nsteps_inverse: float = 1.0 / nsteps
+        xstep: float = dx * nsteps_inverse
+        ystep: float = dy * nsteps_inverse
+        # Draw each (x, y) dot from (x1, y1) to (x2, y2). These dots are
+        # connected by either an dot edge edge (e.g. ⠆) or a corner between the
+        # two dots (e.g. ⠊).
+        x: float = float(self.p1.x)
+        y: float = float(self.p1.y)
+        for i in range(nsteps + 1):
+            canvas.set_dot((int(round(x)), int(round(y))), True)
+            x += xstep
+            y += ystep
