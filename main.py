@@ -19,24 +19,20 @@ def main() -> None:
     # 80x30 characters total
     canvas = bpgfx.Canvas(160, 120)
 
+    sprite1 = bpgfx.Sprite(bpgfx.Point(3, 3), 5, 5)
+    sprite2 = bpgfx.Sprite(bpgfx.Point(3, 3), 5, 5)
+    for x in range(5):
+        for y in range(5):
+            sprite1.set_dot(x, y, x % 2 == y % 2)
+            sprite2.set_dot(x, y, x % 2 != y % 2)
+
     for i in itertools.count(start=1):
         canvas.clear()
 
         # Draw boarder box.
-        upper = bpgfx.Line(bpgfx.Point(0, 0), bpgfx.Point(canvas.width - 1, 0))
-        lower = bpgfx.Line(
-            bpgfx.Point(0, canvas.height - 1),
-            bpgfx.Point(canvas.width - 1, canvas.height - 1),
+        canvas.draw(
+            bpgfx.Rectangle(bpgfx.Point(0, 0), canvas.width, canvas.height)
         )
-        lhs = bpgfx.Line(bpgfx.Point(0, 0), bpgfx.Point(0, canvas.height - 1))
-        rhs = bpgfx.Line(
-            bpgfx.Point(canvas.width - 1, 0),
-            bpgfx.Point(canvas.width - 1, canvas.height - 1),
-        )
-        canvas.draw(upper)
-        canvas.draw(lower)
-        canvas.draw(lhs)
-        canvas.draw(rhs)
 
         # Draw the sine wave.
         for x in range(canvas.width):
@@ -47,6 +43,11 @@ def main() -> None:
             scale = (canvas.height * 0.75) / 2
             y = int(canvas.height / 2 - math.sin(radians) * scale)
             canvas.draw(bpgfx.Point(x, y))
+
+        # Draw sprite.
+        if i % 15 == 0:
+            sprite1, sprite2 = sprite2, sprite1
+        canvas.draw(sprite1)
 
         TERM_CLEAR = f"\N{ESCAPE}[H\N{ESCAPE}[2J"  # HOME; CLEAR SCREEN
         print(f"{TERM_CLEAR}{canvas}", end="")

@@ -28,7 +28,7 @@
 # U+28Ex | ⣠ | ⣡ | ⣢ | ⣣ | ⣤ | ⣥ | ⣦ | ⣧ | ⣨ | ⣩ | ⣪ | ⣫ | ⣬ | ⣭ | ⣮ | ⣯
 # U+28Fx | ⣰ | ⣱ | ⣲ | ⣳ | ⣴ | ⣵ | ⣶ | ⣷ | ⣸ | ⣹ | ⣺ | ⣻ | ⣼ | ⣽ | ⣾ | ⣿
 
-from typing import List
+from typing import List, Optional
 from abc import ABC, abstractmethod
 import math
 
@@ -36,7 +36,8 @@ import math
 class Canvas:
     def __init__(self, width: int, height: int) -> None:
         if width < 0 or height < 0:
-            raise ValueError(f"Invalid canvas size {width}x{height}")
+            name: str = type(self).__name__
+            raise ValueError(f"Invalid {name} size {width}x{height}")
         # fmt: off
         self._width:  int = width
         self._height: int = height
@@ -150,3 +151,65 @@ class Line(Drawable):
             canvas.set_dot(int(round(x)), int(round(y)), True)
             x += xstep
             y += ystep
+
+
+class Rectangle(Drawable):
+    def __init__(self, position: Point, width: int, height: int) -> None:
+        if width < 0 or height < 0:
+            name: str = type(self).__name__
+            raise ValueError(f"Invalid {name} size {width}x{height}")
+        self.position: Point = position
+        self.width: int = width
+        self.height: int = height
+
+    def draw(self, canvas: Canvas) -> None:
+        x1 = self.position.x
+        y1 = self.position.y
+        x2 = x1 + self.width - 1
+        y2 = x1 + self.height - 1
+        canvas.draw(Line(Point(x1, y1), Point(x2, y1)))
+        canvas.draw(Line(Point(x1, y2), Point(x2, y2)))
+        canvas.draw(Line(Point(x1, y1), Point(x1, y2)))
+        canvas.draw(Line(Point(x2, y1), Point(x2, y2)))
+
+
+class Sprite(Drawable):
+    def __init__(self, position: Point, width: int, height: int) -> None:
+        if width < 0 or height < 0:
+            name: str = type(self).__name__
+            raise ValueError(f"Invalid {name} size {width}x{height}")
+        self.position: Point = position
+        self._width: int = width
+        self._height: int = height
+        self._dots: List[List[Optional[bool]]] = [
+            [None for _ in range(width)] for _ in range(height)
+        ]
+
+    @property
+    def width(self) -> int:
+        return self._width
+
+    @property
+    def height(self) -> int:
+        return self._height
+
+    def get_dot(self, x: int, y: int) -> Optional[bool]:
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            # off-sprite
+            return None
+        return self._dots[y][x]
+
+    def set_dot(self, x: int, y: int, value: Optional[bool]) -> None:
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            # off-sprite
+            return
+        self._dots[y][x] = value
+
+    def draw(self, canvas: Canvas) -> None:
+        for y in range(0, self.height):
+            for x in range(0, self.width):
+                value = self._dots[y][x]
+                if value is None:
+                    # transparent
+                    continue
+                canvas.set_dot(self.position.x + x, self.position.y + y, value)
