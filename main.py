@@ -8,16 +8,30 @@ import time
 import bpgfx
 
 
-class AnimatedSprite:
-    def __init__(
-        self, position: bpgfx.Point, textures: List[bpgfx.Texture]
-    ) -> None:
-        assert len(textures) != 0
+class MyAnimatedDrawable:
+    SIDE_LENGTH = 5
+
+    def __init__(self, position: bpgfx.Point) -> None:
         self.position = position
-        self.textures = textures
+        self.textures = [
+            bpgfx.Texture(self.SIDE_LENGTH, self.SIDE_LENGTH),
+            bpgfx.Texture(self.SIDE_LENGTH, self.SIDE_LENGTH),
+            bpgfx.Texture(self.SIDE_LENGTH, self.SIDE_LENGTH),
+            bpgfx.Texture(self.SIDE_LENGTH, self.SIDE_LENGTH),
+        ]
         self.index = 0
 
-    def advance_texture(self):
+        def edge(n) -> bool:
+            return n == 0 or n == self.SIDE_LENGTH - 1
+
+        for x in range(self.SIDE_LENGTH):
+            for y in range(self.SIDE_LENGTH):
+                self.textures[0].set_dot(x, y, x % 2 == y % 2 or None)
+                self.textures[1].set_dot(x, y, x % 2 != y % 2 or None)
+                self.textures[2].set_dot(x, y, abs(x - y) > 1 or None)
+                self.textures[3].set_dot(x, y, edge(x) or edge(y) or None)
+
+    def advance(self):
         self.index = (self.index + 1) % len(self.textures)
 
     def draw(self, canvas: bpgfx.Canvas):
@@ -26,62 +40,33 @@ class AnimatedSprite:
 
 
 def main() -> None:
-    # 640x480 dots
-    # v
-    # scale down by 4x
-    # v
-    # 160x120 dots
-    # v
-    # with 2x4 dots per monospace character
-    # v
-    # 80x30 characters total
     canvas = bpgfx.Canvas(160, 120)
 
-    TEXTURE_SIDE_LENGTH = 5
-    textures = [
-        bpgfx.Texture(TEXTURE_SIDE_LENGTH, TEXTURE_SIDE_LENGTH),
-        bpgfx.Texture(TEXTURE_SIDE_LENGTH, TEXTURE_SIDE_LENGTH),
-        bpgfx.Texture(TEXTURE_SIDE_LENGTH, TEXTURE_SIDE_LENGTH),
-        bpgfx.Texture(TEXTURE_SIDE_LENGTH, TEXTURE_SIDE_LENGTH),
-    ]
-    for x in range(5):
-        for y in range(5):
+    def wave(t: int) -> int:
+        radians = math.radians(t)
+        scale = (canvas.height * 0.75) / 2
+        return int(canvas.height / 2 - math.sin(radians) * scale)
 
-            def edge(n):
-                return n == 0 or n == TEXTURE_SIDE_LENGTH - 1
+    animated = MyAnimatedDrawable(bpgfx.Point(3, 3))
+    boarder = bpgfx.Rectangle(bpgfx.Point(0, 0), canvas.width, canvas.height)
 
-            textures[0].set_dot(x, y, x % 2 == y % 2)
-            textures[1].set_dot(x, y, x % 2 != y % 2)
-            textures[2].set_dot(x, y, abs(x - y) > 1)
-            textures[3].set_dot(x, y, edge(x) or edge(y))
-    animated_sprite = AnimatedSprite(bpgfx.Point(3, 3), textures)
-
+    FPS = 30
     for i in itertools.count(start=1):
         canvas.clear()
 
-        # Draw boarder box.
-        canvas.draw(
-            bpgfx.Rectangle(bpgfx.Point(0, 0), canvas.width, canvas.height)
-        )
+        canvas.draw(boarder)
 
-        # Draw the sine wave.
         for x in range(canvas.width):
+            y = wave((i + x) * 2)
             canvas.draw(bpgfx.Point(x, canvas.height // 2))
-
-            degrees = (x + i) * 2
-            radians = math.radians(degrees)
-            scale = (canvas.height * 0.75) / 2
-            y = int(canvas.height / 2 - math.sin(radians) * scale)
             canvas.draw(bpgfx.Point(x, y))
 
-        # Draw sprite.
-        canvas.draw(animated_sprite)
+        canvas.draw(animated)
         if i % 15 == 0:
-            animated_sprite.advance_texture()
+            animated.advance()
 
-        TERM_CLEAR = f"\N{ESCAPE}[H\N{ESCAPE}[2J"  # HOME; CLEAR SCREEN
-        print(f"{TERM_CLEAR}{canvas}", end="")
-        time.sleep(1 / 30)
+        print(f"{bpgfx.CLEAR}{canvas}", end="")
+        time.sleep(1 / FPS)
 
 
 if __name__ == "__main__":

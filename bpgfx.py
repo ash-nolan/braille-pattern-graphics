@@ -31,6 +31,8 @@
 from typing import List, Optional
 import math
 
+CLEAR: str = f"\N{ESCAPE}[H\N{ESCAPE}[2J"  # HOME; CLEAR SCREEN
+
 
 class Canvas:
     def __init__(self, width: int, height: int) -> None:
