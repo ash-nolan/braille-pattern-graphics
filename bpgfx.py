@@ -29,7 +29,6 @@
 # U+28Fx | ⣰ | ⣱ | ⣲ | ⣳ | ⣴ | ⣵ | ⣶ | ⣷ | ⣸ | ⣹ | ⣺ | ⣻ | ⣼ | ⣽ | ⣾ | ⣿
 
 from typing import List, Optional
-from abc import ABC, abstractmethod
 import math
 
 
@@ -38,14 +37,13 @@ class Canvas:
         if width < 0 or height < 0:
             name: str = type(self).__name__
             raise ValueError(f"Invalid {name} size {width}x{height}")
-        # fmt: off
-        self._width:  int = width
+        self._width: int = width
         self._height: int = height
-        dots_w = int(math.ceil(width  / 2) * 2)
+        dots_w = int(math.ceil(width / 2) * 2)
         dots_h = int(math.ceil(height / 4) * 4)
-        self._dots: List[List[bool]] = \
-            [[False for _ in range(dots_w)] for _ in range(dots_h)]
-        # fmt: on
+        self._dots: List[List[bool]] = [
+            [False for _ in range(dots_w)] for _ in range(dots_h)
+        ]
 
     @property
     def width(self) -> int:
@@ -104,6 +102,38 @@ class Canvas:
                 s += chr(0x2800 | bits)
             s += "\n"
         return s
+
+
+class Texture:
+    def __init__(self, width: int, height: int) -> None:
+        if width < 0 or height < 0:
+            name: str = type(self).__name__
+            raise ValueError(f"Invalid {name} size {width}x{height}")
+        self._width: int = width
+        self._height: int = height
+        self._dots: List[List[Optional[bool]]] = [
+            [None for _ in range(width)] for _ in range(height)
+        ]
+
+    @property
+    def width(self) -> int:
+        return self._width
+
+    @property
+    def height(self) -> int:
+        return self._height
+
+    def get_dot(self, x: int, y: int) -> Optional[bool]:
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            # off-texture
+            return None
+        return self._dots[y][x]
+
+    def set_dot(self, x: int, y: int, value: Optional[bool]) -> None:
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            # off-texture
+            return
+        self._dots[y][x] = value
 
 
 class Point:
@@ -168,41 +198,14 @@ class Rectangle:
 
 
 class Sprite:
-    def __init__(self, position: Point, width: int, height: int) -> None:
-        if width < 0 or height < 0:
-            name: str = type(self).__name__
-            raise ValueError(f"Invalid {name} size {width}x{height}")
+    def __init__(self, position: Point, texture: Texture) -> None:
         self.position: Point = position
-        self._width: int = width
-        self._height: int = height
-        self._dots: List[List[Optional[bool]]] = [
-            [None for _ in range(width)] for _ in range(height)
-        ]
-
-    @property
-    def width(self) -> int:
-        return self._width
-
-    @property
-    def height(self) -> int:
-        return self._height
-
-    def get_dot(self, x: int, y: int) -> Optional[bool]:
-        if not (0 <= x < self.width and 0 <= y < self.height):
-            # off-sprite
-            return None
-        return self._dots[y][x]
-
-    def set_dot(self, x: int, y: int, value: Optional[bool]) -> None:
-        if not (0 <= x < self.width and 0 <= y < self.height):
-            # off-sprite
-            return
-        self._dots[y][x] = value
+        self.texture: Texture = texture
 
     def draw(self, canvas: Canvas) -> None:
-        for y in range(0, self.height):
-            for x in range(0, self.width):
-                value = self._dots[y][x]
+        for y in range(0, self.texture.height):
+            for x in range(0, self.texture.width):
+                value = self.texture.get_dot(x, y)
                 if value is None:
                     # transparent
                     continue
