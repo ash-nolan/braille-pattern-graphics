@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from typing import List
 import itertools
 import math
 import time
@@ -90,6 +89,7 @@ def main() -> None:
         canvas.draw(animated)
         animated.update(canvas, t)
 
+        # Clear the screen and render the canvas onto the terminal.
         print(f"{bpgfx.CLEAR}{canvas}", end="")
         time.sleep(1 / 30)
 
