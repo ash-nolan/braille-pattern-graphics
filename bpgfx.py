@@ -66,9 +66,6 @@ class Canvas:
     def width(self) -> int:
         """
         Width of the canvas.
-
-        Dot-pixels in the range x = [0, canvas.width) are within the x-bounds
-        of the canvas.
         """
         return self._width
 
@@ -76,9 +73,6 @@ class Canvas:
     def height(self) -> int:
         """
         Height of the canvas.
-
-        Dot-pixels in the range y = [0, canvas.height) are within the y-bounds
-        of the canvas.
         """
         return self._height
 
@@ -179,7 +173,19 @@ class Canvas:
 
 
 class Texture:
+    """
+    Two-dimensional width x height image of virtual dot-pixels with
+    transparency. The texture is backed by a two-dimensional array of
+    Optional[bool] where True represents a dot-pixel in the "raised" state,
+    False represents a dot-pixel is the "not raised" state, and None represents
+    a transparent pixel.
+    """
+
     def __init__(self, width: int, height: int) -> None:
+        """
+        Create a new width x height texture object with all virtual dot-pixels
+        initially transparent.
+        """
         if width < 0 or height < 0:
             name: str = type(self).__name__
             raise ValueError(f"Invalid {name} size {width} x {height}")
@@ -191,19 +197,38 @@ class Texture:
 
     @property
     def width(self) -> int:
+        """
+        Width of the texture.
+        """
         return self._width
 
     @property
     def height(self) -> int:
+        """
+        Height of the texture.
+        """
         return self._height
 
-    def get_dot(self, x: int, y: int) -> Optional[bool]:
+    def get(self, x: int, y: int) -> Optional[bool]:
+        """
+        Get the state of the dot-pixel at the provided (x, y) position.
+        Attempting to retrieve a dot-pixel outside of the texture bounds will
+        always return transparent (None).
+
+        Returns True if the dot-pixel is raised (pixel on), False if the
+        dot-pixel is not raised (pixel off), or None if the dot-pixel is
+        transparent.
+        """
         if not (0 <= x < self.width and 0 <= y < self.height):
             # off-texture
             return None
         return self._dots[y][x]
 
-    def set_dot(self, x: int, y: int, value: Optional[bool]) -> None:
+    def set(self, x: int, y: int, value: Optional[bool]) -> None:
+        """
+        Set the state of the dot-pixel at the provided (x, y) position to
+        raised (True), not raised (False), or transparent (None).
+        """
         if not (0 <= x < self.width and 0 <= y < self.height):
             # off-texture
             return
@@ -279,7 +304,7 @@ class Sprite:
     def draw(self, canvas: Canvas) -> None:
         for y in range(0, self.texture.height):
             for x in range(0, self.texture.width):
-                value = self.texture.get_dot(x, y)
+                value = self.texture.get(x, y)
                 if value is None:
                     # transparent
                     continue

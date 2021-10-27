@@ -28,10 +28,10 @@ class MyAnimatedDrawable:
 
         for x in range(self.SIDE_LENGTH):
             for y in range(self.SIDE_LENGTH):
-                self.textures[0].set_dot(x, y, x % 2 == y % 2 or None)
-                self.textures[1].set_dot(x, y, x % 2 != y % 2 or None)
-                self.textures[2].set_dot(x, y, abs(x - y) > 1 or None)
-                self.textures[3].set_dot(x, y, edge(x) or edge(y) or None)
+                self.textures[0].set(x, y, x % 2 == y % 2 or None)
+                self.textures[1].set(x, y, x % 2 != y % 2 or None)
+                self.textures[2].set(x, y, abs(x - y) > 1 or None)
+                self.textures[3].set(x, y, edge(x) or edge(y) or None)
 
     def update(self, canvas: bpgfx.Canvas, frame: int):
         self.position.x += self.dx
