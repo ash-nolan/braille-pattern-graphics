@@ -31,7 +31,11 @@
 from typing import List, Optional
 import math
 
-CLEAR: str = f"\N{ESCAPE}[H\N{ESCAPE}[2J"  # HOME; CLEAR SCREEN
+# ANSI escape sequence for "move cursor home" followed by "clear screen".
+# Printing this escape sequence to the terminal will clear the screen and
+# reposition the cursor on the top-left of the terminal in terminal emulators
+# with support for ANSI escape codes.
+CLEAR: str = f"\N{ESCAPE}[H\N{ESCAPE}[2J"
 
 
 class Canvas:
