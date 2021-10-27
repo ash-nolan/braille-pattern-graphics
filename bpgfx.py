@@ -35,10 +35,21 @@ CLEAR: str = f"\N{ESCAPE}[H\N{ESCAPE}[2J"  # HOME; CLEAR SCREEN
 
 
 class Canvas:
+    """
+    Two-dimensional surface of width x height virtual dot-pixels. The canvas
+    represents an image using one-bit graphics backed by a two-dimensional
+    array of bool where True represents a dot-pixel in the "raised" state and
+    False represents a dot-pixel is the "not raised" state.
+    """
+
     def __init__(self, width: int, height: int) -> None:
+        """
+        Create a new width x height canvas object with all virtual dot-pixels
+        initially set to the not raised state.
+        """
         if width < 0 or height < 0:
             name: str = type(self).__name__
-            raise ValueError(f"Invalid {name} size {width}x{height}")
+            raise ValueError(f"Invalid {name} size {width} x {height}")
         self._width: int = width
         self._height: int = height
         dots_w = int(math.ceil(width / 2) * 2)
@@ -49,38 +60,95 @@ class Canvas:
 
     @property
     def width(self) -> int:
+        """
+        Width of the canvas.
+
+        Dot-pixels in the range x = [0, canvas.width) are within the x-bounds
+        of the canvas.
+        """
         return self._width
 
     @property
     def height(self) -> int:
+        """
+        Height of the canvas.
+
+        Dot-pixels in the range y = [0, canvas.height) are within the y-bounds
+        of the canvas.
+        """
         return self._height
 
-    def get_dot(self, x: int, y: int) -> bool:
+    def get(self, x: int, y: int) -> bool:
+        """
+        Get the state of the dot-pixel at the provided (x, y) position.
+        Attempting to retrieve a dot-pixel outside of the canvas bounds will
+        always return not raised (False).
+
+        Returns True if the dot-pixel is raised (pixel on) or False if the
+        dot-pixel is not raised (pixel off).
+        """
         if not (0 <= x < self.width and 0 <= y < self.height):
             # off-canvas
             return False
         return self._dots[y][x]
 
-    def set_dot(self, x: int, y: int, raised: bool) -> None:
+    def set(self, x: int, y: int, raised: bool) -> None:
+        """
+        Set the state of the dot-pixel at the provided (x, y) position to
+        raised (True) or not raised (False).
+        """
         if not (0 <= x < self.width and 0 <= y < self.height):
             # off-canvas
             return
         self._dots[y][x] = raised
 
     def clear(self, raised: bool = False) -> None:
+        """
+        Set all pixels on the canvas to the provided state (default not
+        raised).
+        """
         for y in range(self.height):
             for x in range(self.width):
                 self._dots[y][x] = raised
 
     def draw(self, drawable) -> None:
+        """
+        Invoke the provided object's draw method passing self as the canvas
+        parameter. Any object that implements the draw method:
+            obj.draw(canvas)
+        is considered "drawable".
+        """
         drawable.draw(self)
 
     def __repr__(self) -> str:
+        """
+        Returns repr(self).
+        """
         name: str = type(self).__name__
         dots: str = repr(self._dots)
-        return f"{name}({self.width}x{self.height}, {dots})"
+        return f"{name}({self.width} x {self.height}, {dots})"
 
     def __str__(self) -> str:
+        """
+        Returns str(self).
+
+        The function call:
+            str(canvas)
+        will encode the virtual dot-pixels of the canvas as a string of braille
+        pattern characters suitable for "rendering" to a terminal or text field
+        with a monospace font.
+
+        Example:
+            canvas = Canvas(9, 9)
+            for y in range(canvas.height):
+                for x in range(canvas.width):
+                    canvas.set(x, y, x % 2 == y % 2)
+            print(canvas, end="")
+
+            ⢕⢕⢕⢕⠅
+            ⢕⢕⢕⢕⠅
+            ⠁⠁⠁⠁⠁
+        """
         s = ""
         for y in range(0, self.height, 4):
             for x in range(0, self.width, 2):
@@ -110,7 +178,7 @@ class Texture:
     def __init__(self, width: int, height: int) -> None:
         if width < 0 or height < 0:
             name: str = type(self).__name__
-            raise ValueError(f"Invalid {name} size {width}x{height}")
+            raise ValueError(f"Invalid {name} size {width} x {height}")
         self._width: int = width
         self._height: int = height
         self._dots: List[List[Optional[bool]]] = [
@@ -144,7 +212,7 @@ class Point:
         self.y: int = y
 
     def draw(self, canvas: Canvas) -> None:
-        canvas.set_dot(self.x, self.y, True)
+        canvas.set(self.x, self.y, True)
 
 
 class Line:
@@ -174,7 +242,7 @@ class Line:
         x: float = float(self.p1.x)
         y: float = float(self.p1.y)
         for i in range(nsteps + 1):
-            canvas.set_dot(int(round(x)), int(round(y)), True)
+            canvas.set(int(round(x)), int(round(y)), True)
             x += xstep
             y += ystep
 
@@ -183,7 +251,7 @@ class Rectangle:
     def __init__(self, position: Point, width: int, height: int) -> None:
         if width < 0 or height < 0:
             name: str = type(self).__name__
-            raise ValueError(f"Invalid {name} size {width}x{height}")
+            raise ValueError(f"Invalid {name} size {width} x {height}")
         self.position: Point = position
         self.width: int = width
         self.height: int = height
@@ -211,4 +279,4 @@ class Sprite:
                 if value is None:
                     # transparent
                     continue
-                canvas.set_dot(self.position.x + x, self.position.y + y, value)
+                canvas.set(self.position.x + x, self.position.y + y, value)
