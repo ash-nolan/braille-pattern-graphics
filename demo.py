@@ -8,6 +8,10 @@ import bpgfx
 
 
 class MyAnimatedDrawable:
+    """
+    Example user-defined class implementing the drawable interface.
+    """
+
     SIDE_LENGTH = 5
 
     def __init__(self, x: int, y: int, dx: int = +1, dy: int = +1) -> None:
