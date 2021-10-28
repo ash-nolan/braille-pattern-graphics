@@ -1,10 +1,10 @@
 .POSIX:
 .PHONY: all main lint format clean
 
-all: main
+all: demo
 
-main:
-	python3 main.py
+demo:
+	python3 demo.py
 
 lint:
 	python3 -m mypy *.py
