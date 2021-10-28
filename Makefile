@@ -1,5 +1,5 @@
 .POSIX:
-.PHONY: all main lint format clean
+.PHONY: all demo lint format clean
 
 all: demo
 
