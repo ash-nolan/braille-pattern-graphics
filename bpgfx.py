@@ -236,6 +236,9 @@ class Texture:
 
 
 class Point:
+    """
+    Point at position (x, y).
+    """
     def __init__(self, x: int, y: int) -> None:
         self.x: int = x
         self.y: int = y
@@ -245,6 +248,9 @@ class Point:
 
 
 class Line:
+    """
+    Line from position (x1, y1) to position (x2, y2).
+    """
     def __init__(self, x1: int, y1: int, x2: int, y2: int) -> None:
         self.x1: int = x1
         self.y1: int = y1
@@ -253,7 +259,7 @@ class Line:
 
     def draw(self, canvas: Canvas) -> None:
         # Optimized line function from the article "Line drawing on a grid"
-        # written by Red Blob Games, ported from C# to Python3.
+        # written by Red Blob Games, ported from C#.
         # https://www.redblobgames.com/grids/line-drawing.html
         #
         # The number of steps to take is exactly the diagonal distance between
@@ -279,6 +285,9 @@ class Line:
 
 
 class Rectangle:
+    """
+    Axis-aligned rectangle with upper-left corner at position (x, y).
+    """
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
         if width < 0 or height < 0:
             name: str = type(self).__name__
@@ -300,6 +309,9 @@ class Rectangle:
 
 
 class Sprite:
+    """
+    Axis-aligned texture mapping with upper-left corner at position (x, y).
+    """
     def __init__(self, x: int, y: int, texture: Texture) -> None:
         self.x: int = x
         self.y: int = y
