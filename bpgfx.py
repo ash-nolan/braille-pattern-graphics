@@ -245,9 +245,11 @@ class Point:
 
 
 class Line:
-    def __init__(self, p1: Point, p2: Point) -> None:
-        self.p1: Point = p1
-        self.p2: Point = p2
+    def __init__(self, x1: int, y1: int, x2: int, y2: int) -> None:
+        self.x1: int = x1
+        self.y1: int = y1
+        self.x2: int = x2
+        self.y2: int = y2
 
     def draw(self, canvas: Canvas) -> None:
         # Optimized line function from the article "Line drawing on a grid"
@@ -256,8 +258,8 @@ class Line:
         #
         # The number of steps to take is exactly the diagonal distance between
         # (x1, y1) and (x2, y2).
-        dx: int = self.p2.x - self.p1.x
-        dy: int = self.p2.y - self.p1.y
+        dx: int = self.x2 - self.x1
+        dy: int = self.y2 - self.y1
         abs_dx: int = abs(dx)
         abs_dy: int = abs(dy)
         nsteps: int = abs_dx if abs_dx > abs_dy else abs_dy
@@ -268,8 +270,8 @@ class Line:
         # Draw each (x, y) dot from (x1, y1) to (x2, y2). These dots are
         # connected by either an dot edge edge (e.g. ⠆) or a corner between the
         # two dots (e.g. ⠊).
-        x: float = float(self.p1.x)
-        y: float = float(self.p1.y)
+        x: float = float(self.x1)
+        y: float = float(self.y1)
         for i in range(nsteps + 1):
             canvas.set(int(round(x)), int(round(y)), True)
             x += xstep
@@ -277,28 +279,30 @@ class Line:
 
 
 class Rectangle:
-    def __init__(self, position: Point, width: int, height: int) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int) -> None:
         if width < 0 or height < 0:
             name: str = type(self).__name__
             raise ValueError(f"Invalid {name} size {width} x {height}")
-        self.position: Point = position
+        self.x: int = x
+        self.y: int = y
         self.width: int = width
         self.height: int = height
 
     def draw(self, canvas: Canvas) -> None:
-        x1 = self.position.x
-        y1 = self.position.y
+        x1 = self.x
+        y1 = self.y
         x2 = x1 + self.width - 1
         y2 = x1 + self.height - 1
-        canvas.draw(Line(Point(x1, y1), Point(x2, y1)))
-        canvas.draw(Line(Point(x1, y2), Point(x2, y2)))
-        canvas.draw(Line(Point(x1, y1), Point(x1, y2)))
-        canvas.draw(Line(Point(x2, y1), Point(x2, y2)))
+        canvas.draw(Line(x1, y1, x2, y1))
+        canvas.draw(Line(x1, y2, x2, y2))
+        canvas.draw(Line(x1, y1, x1, y2))
+        canvas.draw(Line(x2, y1, x2, y2))
 
 
 class Sprite:
-    def __init__(self, position: Point, texture: Texture) -> None:
-        self.position: Point = position
+    def __init__(self, x: int, y: int, texture: Texture) -> None:
+        self.x: int = x
+        self.y: int = y
         self.texture: Texture = texture
 
     def draw(self, canvas: Canvas) -> None:
@@ -308,4 +312,4 @@ class Sprite:
                 if value is None:
                     # transparent
                     continue
-                canvas.set(self.position.x + x, self.position.y + y, value)
+                canvas.set(self.x + x, self.y + y, value)

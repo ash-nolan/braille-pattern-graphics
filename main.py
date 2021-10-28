@@ -10,8 +10,9 @@ import bpgfx
 class MyAnimatedDrawable:
     SIDE_LENGTH = 5
 
-    def __init__(self, position: bpgfx.Point, dx=+1, dy=+1) -> None:
-        self.position = position
+    def __init__(self, x: int, y: int, dx: int = +1, dy: int = +1) -> None:
+        self.x = x
+        self.y = y
         self.dx = dx
         self.dy = dy
         self.textures = [
@@ -34,32 +35,32 @@ class MyAnimatedDrawable:
                 self.textures[3].set(x, y, edge(x) or edge(y) or None)
 
     def update(self, canvas: bpgfx.Canvas, frame: int):
-        self.position.x += self.dx
-        self.position.y += self.dy
+        self.x += self.dx
+        self.y += self.dy
 
-        if self.position.x <= 1:
+        if self.x <= 1:
             self.dx = +1
-        elif self.position.x + self.SIDE_LENGTH >= canvas.width - 1:
+        elif self.x + self.SIDE_LENGTH >= canvas.width - 1:
             self.dx = -1
 
-        if self.position.y <= 1:
+        if self.y <= 1:
             self.dy = +1
-        elif self.position.y + self.SIDE_LENGTH >= canvas.height - 1:
+        elif self.y + self.SIDE_LENGTH >= canvas.height - 1:
             self.dy = -1
 
         if frame % 15 == 0:
             self.index = (self.index + 1) % len(self.textures)
 
     def draw(self, canvas: bpgfx.Canvas):
-        sprite = bpgfx.Sprite(self.position, self.textures[self.index])
+        sprite = bpgfx.Sprite(self.x, self.y, self.textures[self.index])
         canvas.draw(sprite)
 
 
 def main() -> None:
     canvas = bpgfx.Canvas(160, 120)
 
-    animated = MyAnimatedDrawable(bpgfx.Point(3, 3))
-    boarder = bpgfx.Rectangle(bpgfx.Point(0, 0), canvas.width, canvas.height)
+    animated = MyAnimatedDrawable(3, 3)
+    boarder = bpgfx.Rectangle(0, 0, canvas.width, canvas.height)
     for t in itertools.count(start=1):
         canvas.clear()
 
@@ -79,11 +80,10 @@ def main() -> None:
         # Draw the animated square as well as the line that follows the
         # animated square around the canvas.
         follower = bpgfx.Line(
-            bpgfx.Point(canvas.width // 2, canvas.height // 2),
-            bpgfx.Point(
-                animated.position.x + animated.SIDE_LENGTH // 2,
-                animated.position.y + animated.SIDE_LENGTH // 2,
-            ),
+            canvas.width // 2,
+            canvas.height // 2,
+            animated.x + animated.SIDE_LENGTH // 2,
+            animated.y + animated.SIDE_LENGTH // 2,
         )
         canvas.draw(follower)
         canvas.draw(animated)
