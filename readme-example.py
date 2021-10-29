@@ -19,8 +19,8 @@ canvas.draw(rectangle)
 
 # Draw a pretty sine wave across the canvas.
 for x in range(canvas.width):
-    # The canvas' set function will set a virtual dot-pixel to raised or
-    # not raised (on or off).
+    # The canvas' set method will set a virtual dot-pixel to raised or not
+    # raised (on or off).
     #
     # canvas.set(x, y, True)   # raised
     # canvas.set(x, y, False)  # not raised
