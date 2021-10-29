@@ -13,6 +13,11 @@ lint:
 format:
 	python3 -m black *.py --line-length 79
 
+dist:
+	python3 setup.py sdist
+
 clean:
 	rm -rf __pycache__
 	rm -rf .mypy_cache/
+	rm -rf *.egg-info/
+	rm -rf dist/
