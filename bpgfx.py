@@ -90,7 +90,7 @@ class Canvas:
             return False
         return self._dots[y][x]
 
-    def set(self, x: int, y: int, raised: bool) -> None:
+    def set(self, x: int, y: int, raised: bool=True) -> None:
         """
         Set the state of the dot-pixel at the provided (x, y) position to
         raised (True) or not raised (False).
@@ -224,7 +224,7 @@ class Texture:
             return None
         return self._dots[y][x]
 
-    def set(self, x: int, y: int, value: Optional[bool]) -> None:
+    def set(self, x: int, y: int, value: Optional[bool]=True) -> None:
         """
         Set the state of the dot-pixel at the provided (x, y) position to
         raised (True), not raised (False), or transparent (None).
