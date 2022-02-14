@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="braille-pattern-graphics",
-    version="0.1.0",
+    version="1.0.0",
     description="2D graphics using braille patterns",
     author="ashn",
     author_email="<me@ashn.dev>",
