@@ -43,7 +43,7 @@ class Canvas:
     Two-dimensional surface of width x height virtual dot-pixels. The canvas
     represents an image using one-bit graphics backed by a two-dimensional
     array of bool where True represents a dot-pixel in the "raised" state and
-    False represents a dot-pixel is the "not raised" state.
+    False represents a dot-pixel in the "not raised" state.
     """
 
     def __init__(self, width: int, height: int) -> None:
@@ -177,7 +177,7 @@ class Texture:
     Two-dimensional width x height image of virtual dot-pixels with
     transparency. The texture is backed by a two-dimensional array of
     Optional[bool] where True represents a dot-pixel in the "raised" state,
-    False represents a dot-pixel is the "not raised" state, and None represents
+    False represents a dot-pixel in the "not raised" state, and None represents
     a transparent pixel.
     """
 
