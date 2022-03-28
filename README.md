@@ -14,7 +14,7 @@ from math import sin, radians
 # canvas is rendered via its __str__ method.
 canvas = Canvas(80, 60)
 
-# Draw a rectangle around the boarder of the canvas.
+# Draw a rectangle around the border of the canvas.
 # The Rectangle class implements the "drawable" interface with the method:
 #
 #   def draw(self, canvas: Canvas) -> None:
