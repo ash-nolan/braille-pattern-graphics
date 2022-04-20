@@ -6,6 +6,6 @@ setup(
     description="2D graphics using braille patterns",
     author="ashn",
     author_email="<me@ashn.dev>",
-    url="https://github.com/ash-nolan/braille-pattern-graphics",
+    url="https://github.com/ashn-dot-dev/braille-pattern-graphics",
     py_modules=["bpgfx"]
 )
